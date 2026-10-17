@@ -1,8 +1,9 @@
 package com.zjc.libraryseat;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-
+@MapperScan("com.zjc.libraryseat.mapper")
 @SpringBootApplication
 public class LibrarySeatApplication {
 
