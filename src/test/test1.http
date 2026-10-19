@@ -6,3 +6,9 @@ GET https://examples.http-client.intellij.net/get
 GET http://localhost:8080/room/list
 ###
 GET http://localhost:8080/room/1
+###
+GET http://localhost:8080/seat/list
+###
+GET http://localhost:8080/seat/list?roomId=1
+###
+GET http://localhost:8080/seat/1
