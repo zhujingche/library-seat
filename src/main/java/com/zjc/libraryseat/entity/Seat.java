@@ -7,8 +7,8 @@ import lombok.Data;
 @TableName("t_seat")
 public class Seat {
 private Long id;
-private String roomId;
+private Long roomId;
 private String seatNo;
-private String status;
+private Integer status;
 
 }
