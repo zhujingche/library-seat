@@ -12,3 +12,7 @@ GET http://localhost:8080/seat/list
 GET http://localhost:8080/seat/list?roomId=1
 ###
 GET http://localhost:8080/seat/1
+###
+GET http://localhost:8080/seat/available?seatId=1&date=2026-10-20
+###
+GET http://localhost:8080/seat/available?seatId=1&date=2026-10-21

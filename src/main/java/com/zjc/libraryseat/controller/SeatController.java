@@ -2,6 +2,8 @@ package com.zjc.libraryseat.controller;
 import com.zjc.libraryseat.entity.Seat;
 import com.zjc.libraryseat.service.SeatService;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 import java.util.List;
 @RestController
 @RequestMapping("/seat")
@@ -21,5 +23,10 @@ public class SeatController {
     {
         return seatService.getById(id);
     }
-
+@GetMapping("/available")
+    public List<Integer> getavailableSlots(@RequestParam Long seatId,
+                                           @RequestParam String date)
+{
+    return seatService.availableSlots(seatId,LocalDate.parse(date));
+}
 }
