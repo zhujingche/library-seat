@@ -8,7 +8,7 @@ public class Room {
     private Long id;
 private String name;
 private String location;
-private Integer open_slot;
-private Integer close_slot;
+private Integer openSlot;
+private Integer closeSlot;
 private Integer status;
 }

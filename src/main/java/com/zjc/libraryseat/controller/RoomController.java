@@ -18,9 +18,9 @@ public class RoomController {
         this.roomService=roomService;
     }
     @GetMapping("/list")
-    public List<Room> listall()
+    public List<Room> listAll()
     {
-        return roomService.listall();
+        return roomService.listAll();
     }
     @GetMapping("/{id}")
     public Room getById(@PathVariable Long id)

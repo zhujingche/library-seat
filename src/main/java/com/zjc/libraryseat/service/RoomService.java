@@ -13,7 +13,7 @@ public class RoomService {
     {
         this.roomMapper=roomMapper;
     }
-public List<Room> listall()
+public List<Room> listAll()
 {
     return roomMapper.selectList(null);
 }
