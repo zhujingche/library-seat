@@ -33,38 +33,41 @@ public class ReservationService {
 
     @Transactional
     public Long makeReservation(ReservationRequest req) {
-        if (req.getSeatId() == null) {
-            throw new RuntimeException("该座位不存在哦~");
+        if (req.getSeatId() == null || req.getDate() == null
+                || req.getStartSlot() == null || req.getEndSlot() == null) {
+            throw new RuntimeException("参数不完整,再检查一下吧~");
         }
         Seat seat = seatMapper.selectById(req.getSeatId());
+        if(seat == null){
+            throw new RuntimeException("该座位不存在");
+        }
         Room room = roomMapper.selectById(seat.getRoomId());
-        Integer openslot = room.getOpenSlot();
-        Integer closeslot = room.getCloseSlot();
-        if (openslot >= req.getStartSlot() || closeslot <= req.getEndSlot() || req.getStartSlot() < req.getEndSlot()) {
+        boolean valid = req.getStartSlot() >= room.getOpenSlot()
+                && req.getEndSlot() <= room.getCloseSlot()
+                && req.getStartSlot() < req.getEndSlot();
+        if (!valid)
+        {
             throw new RuntimeException("所填时间范围有误哦~");
         }
         QueryWrapper<ReservationSlot> wrapper = new QueryWrapper<>();
         wrapper.eq("seat_id", seat.getId());
         wrapper.eq("reserve_date", req.getDate());
         List<ReservationSlot> occupied = reservationSlotMapper.selectList(wrapper);
-        List<Integer> occupiedtime = new ArrayList<>();
-        for (ReservationSlot slot : occupied) {
-            occupiedtime.add(slot.getSlotNo());
-        }
-        for (Integer slot : occupiedtime) {
-            if (slot <= closeslot && slot >= openslot) {
-                throw new RuntimeException("该时段已被占用~");
+        for(ReservationSlot slot : occupied){
+            if(slot.getSlotNo()>=req.getStartSlot()&&slot.getSlotNo()<req.getEndSlot()){
+                throw new RuntimeException("该时段已经被占用了哦~");
             }
         }
         Reservation r= new Reservation();
         r.setSeatId(seat.getId());
         r.setReserveDate(req.getDate());
-        r.setStartSlot(openslot);
-        r.setEndSlot(closeslot);
-        r.setStatus("Reserved");
+        r.setStartSlot(req.getStartSlot());
+        r.setEndSlot(req.getEndSlot());
+        r.setUserId(req.getUserId());
+        r.setStatus("RESERVED");
         reservationMapper.insert(r);
         try {
-            for(int i=req.getStartSlot();i<=req.getEndSlot();i++){
+            for(int i=req.getStartSlot();i<req.getEndSlot();i++){
                 ReservationSlot slot = new ReservationSlot();
                 slot.setReservationId(r.getId());
                 slot.setSlotNo(i);

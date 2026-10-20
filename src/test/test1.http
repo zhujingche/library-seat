@@ -21,10 +21,4 @@ GET http://localhost:8080/seat/available?seatId=1&date=2026-10-21
 POST http://localhost:8080/reservation
 Content-Type: application/json
 
-{
-  "userId": 2,
-  "seatId": 1,
-  "date": "2026-10-20",
-  "startSlot": 8,
-  "endSlot": 12
-}
+{ "userId": 2, "seatId": 1, "date": "2026-10-20", "startSlot": 8, "endSlot": 12 }
