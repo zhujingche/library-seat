@@ -12,11 +12,8 @@ import com.zjc.libraryseat.mapper.SeatMapper;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-
 @Service
 public class ReservationService {
     private final ReservationMapper reservationMapper;
@@ -30,18 +27,27 @@ public class ReservationService {
         this.seatMapper = seatMapper;
         this.reservationSlotMapper = reservationSlotMapper;
     }
-
     @Transactional
     public Long makeReservation(ReservationRequest req) {
         if (req.getSeatId() == null || req.getDate() == null
-                || req.getStartSlot() == null || req.getEndSlot() == null) {
+                || req.getStartSlot() == null || req.getEndSlot() == null||req.getUserId()==null) {
             throw new RuntimeException("参数不完整,再检查一下吧~");
+        }
+        if (req.getDate().isBefore(LocalDate.now())) {
+            throw new RuntimeException("不能预约过去的日期哦~");
         }
         Seat seat = seatMapper.selectById(req.getSeatId());
         if(seat == null){
             throw new RuntimeException("该座位不存在");
         }
+        if(seat.getStatus()==0)
+        {
+            throw new RuntimeException("该座位正在维修,暂不可用");
+        }
         Room room = roomMapper.selectById(seat.getRoomId());
+        if (room == null) {
+            throw new RuntimeException("该座位所属的阅览室不存在");
+        }
         boolean valid = req.getStartSlot() >= room.getOpenSlot()
                 && req.getEndSlot() <= room.getCloseSlot()
                 && req.getStartSlot() < req.getEndSlot();
@@ -76,7 +82,7 @@ public class ReservationService {
                 reservationSlotMapper.insert(slot);
             }
         }catch(DuplicateKeyException e){
-            throw new RuntimeException("该时段以及被预约了哦,请换一个吧~");
+            throw new RuntimeException("该时段已经被预约了哦,请换一个吧~");
         }
         return r.getId();
     }

@@ -24,7 +24,7 @@ public class SeatController {
         return seatService.getById(id);
     }
 @GetMapping("/available")
-    public List<Integer> getavailableSlots(@RequestParam Long seatId,
+    public List<Integer> getAvailableSlots(@RequestParam Long seatId,
                                            @RequestParam String date)
 {
     return seatService.availableSlots(seatId,LocalDate.parse(date));
