@@ -29,12 +29,12 @@ public class GlobalExceptionHandler {
             MissingServletRequestParameterException.class,
             DateTimeParseException.class}
     )
-    public ResponseEntity<ErrorResponse> handleBadRequset(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleBadRequset() {
 return  errorResponse("请求参数有误,请再检查一下吧~");
     }
     //路径不存在
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNoResourceFoundException(NoResourceFoundException ex) {
+    public ResponseEntity<ErrorResponse> handleNoResourceFoundException() {
         return ResponseEntity.status(404).body(new ErrorResponse("404", "请求的路径不存在哦~"));
     }
     //处理剩下的异常
