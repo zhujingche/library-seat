@@ -22,3 +22,9 @@ POST http://localhost:8080/reservation
 Content-Type: application/json
 
 { "userId": 2, "seatId": 1, "date": "2026-10-20", "startSlot": 8, "endSlot": 12 }
+###
+### 缺 date → 应该 400 + {"code":400,"message":"参数不完整..."}
+POST http://localhost:8080/reservation
+Content-Type: application/json
+
+{ "userId": 2, "seatId": 1, "startSlot": 8, "endSlot": 12 }

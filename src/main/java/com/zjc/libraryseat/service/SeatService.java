@@ -3,6 +3,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zjc.libraryseat.entity.ReservationSlot;
 import com.zjc.libraryseat.entity.Room;
 import com.zjc.libraryseat.entity.Seat;
+import com.zjc.libraryseat.exception.BusinessException;
 import com.zjc.libraryseat.mapper.ReservationSlotMapper;
 import com.zjc.libraryseat.mapper.RoomMapper;
 import com.zjc.libraryseat.mapper.SeatMapper;
@@ -38,11 +39,11 @@ public class SeatService {
     public List<Integer> availableSlots(Long seatId, LocalDate date) {
         Seat seat = seatMapper.selectById(seatId);
         if (seat == null) {
-            throw new RuntimeException("错误!没有这个座位哦~");
+            throw new BusinessException("错误!没有这个座位哦~");
         }
         Room room = roomMapper.selectById(seat.getRoomId());
         if (room == null) {
-            throw new RuntimeException("错误!没有这个房间哦~");
+            throw new BusinessException("错误!没有这个房间哦~");
         }
         Integer openSlot = room.getOpenSlot();
         Integer closeSlot = room.getCloseSlot();

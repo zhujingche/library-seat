@@ -5,6 +5,7 @@ import com.zjc.libraryseat.entity.Reservation;
 import com.zjc.libraryseat.entity.ReservationSlot;
 import com.zjc.libraryseat.entity.Room;
 import com.zjc.libraryseat.entity.Seat;
+import com.zjc.libraryseat.exception.BusinessException;
 import com.zjc.libraryseat.mapper.ReservationMapper;
 import com.zjc.libraryseat.mapper.ReservationSlotMapper;
 import com.zjc.libraryseat.mapper.RoomMapper;
@@ -31,29 +32,29 @@ public class ReservationService {
     public Long makeReservation(ReservationRequest req) {
         if (req.getSeatId() == null || req.getDate() == null
                 || req.getStartSlot() == null || req.getEndSlot() == null||req.getUserId()==null) {
-            throw new RuntimeException("参数不完整,再检查一下吧~");
+            throw new BusinessException("参数不完整,再检查一下吧~");
         }
         if (req.getDate().isBefore(LocalDate.now())) {
-            throw new RuntimeException("不能预约过去的日期哦~");
+            throw new BusinessException("不能预约过去的日期哦~");
         }
         Seat seat = seatMapper.selectById(req.getSeatId());
         if(seat == null){
-            throw new RuntimeException("该座位不存在");
+            throw new BusinessException("该座位不存在");
         }
         if(seat.getStatus()==0)
         {
-            throw new RuntimeException("该座位正在维修,暂不可用");
+            throw new BusinessException("该座位正在维修,暂不可用");
         }
         Room room = roomMapper.selectById(seat.getRoomId());
         if (room == null) {
-            throw new RuntimeException("该座位所属的阅览室不存在");
+            throw new BusinessException("该座位所属的阅览室不存在");
         }
         boolean valid = req.getStartSlot() >= room.getOpenSlot()
                 && req.getEndSlot() <= room.getCloseSlot()
                 && req.getStartSlot() < req.getEndSlot();
         if (!valid)
         {
-            throw new RuntimeException("所填时间范围有误哦~");
+            throw new BusinessException("所填时间范围有误哦~");
         }
         QueryWrapper<ReservationSlot> wrapper = new QueryWrapper<>();
         wrapper.eq("seat_id", seat.getId());
@@ -61,7 +62,7 @@ public class ReservationService {
         List<ReservationSlot> occupied = reservationSlotMapper.selectList(wrapper);
         for(ReservationSlot slot : occupied){
             if(slot.getSlotNo()>=req.getStartSlot()&&slot.getSlotNo()<req.getEndSlot()){
-                throw new RuntimeException("该时段已经被占用了哦~");
+                throw new BusinessException("该时段已经被占用了哦~");
             }
         }
         Reservation r= new Reservation();
@@ -82,7 +83,7 @@ public class ReservationService {
                 reservationSlotMapper.insert(slot);
             }
         }catch(DuplicateKeyException e){
-            throw new RuntimeException("该时段已经被预约了哦,请换一个吧~");
+            throw new BusinessException("该时段已经被预约了哦,请换一个吧~");
         }
         return r.getId();
     }
