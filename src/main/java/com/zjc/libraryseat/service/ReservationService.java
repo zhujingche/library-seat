@@ -1,5 +1,6 @@
 package com.zjc.libraryseat.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zjc.libraryseat.constant.ReservationStatus;
 import com.zjc.libraryseat.dto.ReservationRequest;
 import com.zjc.libraryseat.entity.Reservation;
 import com.zjc.libraryseat.entity.ReservationSlot;
@@ -71,7 +72,7 @@ public class ReservationService {
         r.setStartSlot(req.getStartSlot());
         r.setEndSlot(req.getEndSlot());
         r.setUserId(req.getUserId());
-        r.setStatus("RESERVED");
+        r.setStatus(ReservationStatus.RESERVED);
         reservationMapper.insert(r);
         try {
             for(int i=req.getStartSlot();i<req.getEndSlot();i++){
@@ -87,4 +88,23 @@ public class ReservationService {
         }
         return r.getId();
     }
+    @Transactional
+    public void cancelReservation(Long id)
+    {
+        Reservation r = reservationMapper.selectById(id);
+        if(r==null)
+        {
+            throw new BusinessException("预约不存在哦,检查一下吧~");
+        }
+        if(!ReservationStatus.RESERVED.equals(r.getStatus()))
+        {
+            throw new BusinessException("只有已预约状态的才可取消预约,当前状态为"+r.getStatus());
+        }
+        QueryWrapper<ReservationSlot> wrapper = new QueryWrapper<>();
+        wrapper.eq("reservation_id",id);
+        reservationSlotMapper.delete(wrapper);
+        r.setStatus(ReservationStatus.CANCELLED);
+        reservationMapper.updateById(r);
+    }
+
 }

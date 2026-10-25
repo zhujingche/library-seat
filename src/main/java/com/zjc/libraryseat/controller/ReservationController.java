@@ -1,10 +1,8 @@
 package com.zjc.libraryseat.controller;
 import com.zjc.libraryseat.dto.ReservationRequest;
 import com.zjc.libraryseat.service.ReservationService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 @RestController
 @RequestMapping("/reservation")
 public class ReservationController {
@@ -14,6 +12,11 @@ public ReservationController(ReservationService reservationService) {
 }
 @PostMapping
     public Long addReservation(@RequestBody ReservationRequest req){
-    return reservationService.makeReservation(req);
+    return reservationService.makeReservation(req);}
+   @DeleteMapping("/{id}")
+           public void deleteReservation(@PathVariable Long id)
+    {
+        reservationService.cancelReservation(id);
+    }
 }
-}
+

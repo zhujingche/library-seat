@@ -29,7 +29,7 @@ public class GlobalExceptionHandler {
             MissingServletRequestParameterException.class,
             DateTimeParseException.class}
     )
-    public ResponseEntity<ErrorResponse> handleBadRequset() {
+    public ResponseEntity<ErrorResponse> handleBadRequest() {
 return  errorResponse("请求参数有误,请再检查一下吧~");
     }
     //路径不存在

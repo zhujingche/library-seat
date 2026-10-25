@@ -28,3 +28,20 @@ POST http://localhost:8080/reservation
 Content-Type: application/json
 
 { "userId": 2, "seatId": 1, "startSlot": 8, "endSlot": 12 }
+### ① 先约一个：座位1，2026-11-10，第 8~12 格
+POST http://localhost:8080/reservation
+Content-Type: application/json
+
+{ "userId": 2, "seatId": 1, "date": "2026-11-10", "startSlot": 8, "endSlot": 12 }
+
+### ② 查可用时段 —— 8,9,10,11 应该【不在】列表里
+GET http://localhost:8080/seat/available?seatId=1&date=2026-11-10
+
+### ③ 取消它（假设 ① 返回的 id 是 1）
+DELETE http://localhost:8080/reservation/1
+
+### ④ ★关键验证：再查可用时段 —— 8,9,10,11 应该【回来了】
+GET http://localhost:8080/seat/available?seatId=1&date=2026-11-10
+
+### ⑤ 重复取消 —— 应该报"只有已预约的订单可以取消"
+DELETE http://localhost:8080/reservation/1
