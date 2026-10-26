@@ -18,5 +18,9 @@ public ReservationController(ReservationService reservationService) {
     {
         reservationService.cancelReservation(id);
     }
+    @PostMapping("/{id}/checkin")
+    public void checkin(@PathVariable Long id){
+    reservationService.checkin(id);
+    }
 }
 

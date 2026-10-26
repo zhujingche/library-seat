@@ -45,3 +45,23 @@ GET http://localhost:8080/seat/available?seatId=1&date=2026-11-10
 
 ### ⑤ 重复取消 —— 应该报"只有已预约的订单可以取消"
 DELETE http://localhost:8080/reservation/1
+### ① 约【今天】的时段：slot 4~5（12:00-13:00）
+POST http://localhost:8080/reservation
+Content-Type: application/json
+
+{ "userId": 2, "seatId": 1, "date": "2026-10-26", "startSlot":7, "endSlot":9 }
+
+### ② 签到（假设 ① 返回 id=1）→ 应该成功 200
+POST http://localhost:8080/reservation/2/checkin
+
+### ③ 重复签到 → 应该报"当前状态【CHECKED_IN】不允许签到"
+POST http://localhost:8080/reservation/1/checkin
+
+### ④ 已签到的去取消 → 应该报"当前状态【CHECKED_IN】不允许取消"
+DELETE http://localhost:8080/reservation/1
+
+### ⑤ 约【明天】的时段，然后签到 → 应该报"还没到时间"
+POST http://localhost:8080/reservation
+Content-Type: application/json
+
+{ "userId": 2, "seatId": 2, "date": "2026-10-27", "startSlot": 4, "endSlot": 6 }

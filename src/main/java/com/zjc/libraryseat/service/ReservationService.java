@@ -1,6 +1,7 @@
 package com.zjc.libraryseat.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zjc.libraryseat.constant.ReservationStatus;
+import com.zjc.libraryseat.constant.SlotTime;
 import com.zjc.libraryseat.dto.ReservationRequest;
 import com.zjc.libraryseat.entity.Reservation;
 import com.zjc.libraryseat.entity.ReservationSlot;
@@ -15,6 +16,7 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 @Service
 public class ReservationService {
@@ -96,7 +98,7 @@ public class ReservationService {
         {
             throw new BusinessException("预约不存在哦,检查一下吧~");
         }
-        if(!ReservationStatus.RESERVED.equals(r.getStatus()))
+        if(!ReservationStatus.canTransit(r.getStatus(),ReservationStatus.CANCELLED))
         {
             throw new BusinessException("只有已预约状态的才可取消预约,当前状态为"+r.getStatus());
         }
@@ -106,5 +108,29 @@ public class ReservationService {
         r.setStatus(ReservationStatus.CANCELLED);
         reservationMapper.updateById(r);
     }
-
+    public void checkin(Long id)
+    {
+        Reservation r = reservationMapper.selectById(id);
+        if(r==null)
+        {
+            throw new BusinessException("该预约不存在哦~");
+        }
+        if(!ReservationStatus.canTransit(r.getStatus(),ReservationStatus.CHECKED_IN))
+        {
+            throw new BusinessException("当前状态["+r.getStatus()+"]不允许签到!");
+        }
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime starttime= SlotTime.totime(r.getReserveDate(),r.getStartSlot());
+        LocalDateTime endtime= SlotTime.totime(r.getReserveDate(),r.getEndSlot());
+        if(now.isBefore(starttime.minusMinutes(15)))
+        {
+            throw new BusinessException("还没有到你预约的时段哦~(可提前十五分钟签到)");
+        }
+        if(!now.isBefore(endtime))
+        {
+throw new BusinessException("你的预约时段已经过了哦~");
+        }
+        r.setStatus(ReservationStatus.CHECKED_IN);
+        reservationMapper.updateById(r);
+    }
 }
