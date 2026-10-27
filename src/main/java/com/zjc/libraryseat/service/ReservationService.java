@@ -133,4 +133,33 @@ throw new BusinessException("你的预约时段已经过了哦~");
         r.setStatus(ReservationStatus.CHECKED_IN);
         reservationMapper.updateById(r);
     }
+@Transactional
+    public int releaseExpiredReservations()
+{
+    QueryWrapper<Reservation> wrapper = new QueryWrapper<>();
+    wrapper.eq("status",ReservationStatus.RESERVED);
+    List<Reservation> reservations = reservationMapper.selectList(wrapper);
+    int count=0;
+    LocalDateTime now = LocalDateTime.now();
+    for(Reservation r : reservations)
+    {
+        LocalDateTime endtime= SlotTime.totime(r.getReserveDate(),r.getEndSlot());
+        if(now.isBefore(endtime))
+        {
+            continue;
+        }
+        if(!ReservationStatus.canTransit(r.getStatus(),ReservationStatus.NO_SHOW))
+        {
+            continue;
+        }
+        QueryWrapper<ReservationSlot> wrapper1 = new QueryWrapper<>();
+        wrapper1.eq("reservation_id",r.getId());
+      reservationSlotMapper.delete(wrapper1);
+      r.setStatus(ReservationStatus.NO_SHOW);
+      reservationMapper.updateById(r);
+      count++;
+    }
+    return count;
+}
+
 }

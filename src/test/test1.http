@@ -65,3 +65,5 @@ POST http://localhost:8080/reservation
 Content-Type: application/json
 
 { "userId": 2, "seatId": 2, "date": "2026-10-27", "startSlot": 4, "endSlot": 6 }
+###
+GET http://localhost:8080/seat/available?seatId=3&date=2026-10-26
