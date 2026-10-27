@@ -1,5 +1,6 @@
 package com.zjc.libraryseat.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.zjc.libraryseat.constant.ReservationStatus;
 import com.zjc.libraryseat.constant.SlotTime;
 import com.zjc.libraryseat.dto.ReservationRequest;
@@ -148,15 +149,18 @@ throw new BusinessException("你的预约时段已经过了哦~");
         {
             continue;
         }
-        if(!ReservationStatus.canTransit(r.getStatus(),ReservationStatus.NO_SHOW))
+        UpdateWrapper<Reservation> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id",r.getId());
+        updateWrapper.eq("status",ReservationStatus.RESERVED);
+        updateWrapper.set("status",ReservationStatus.NO_SHOW);
+        int rows = reservationMapper.update(null, updateWrapper);
+        if(rows==0)
         {
             continue;
         }
         QueryWrapper<ReservationSlot> wrapper1 = new QueryWrapper<>();
         wrapper1.eq("reservation_id",r.getId());
       reservationSlotMapper.delete(wrapper1);
-      r.setStatus(ReservationStatus.NO_SHOW);
-      reservationMapper.updateById(r);
       count++;
     }
     return count;
