@@ -67,3 +67,13 @@ Content-Type: application/json
 { "userId": 2, "seatId": 2, "date": "2026-10-27", "startSlot": 4, "endSlot": 6 }
 ###
 GET http://localhost:8080/seat/available?seatId=3&date=2026-10-26
+### 各阅览室占用情况
+GET http://localhost:8080/stat/room-usage?date=2026-10-27
+
+
+### 最热时段 TOP5
+GET http://localhost:8080/stat/slot-heat?date=2026-10-27
+###
+GET http://localhost:8080/stat/room-usage?date=2026-10-28
+###
+GET http://localhost:8080/stat/slot-heat?date=2026-10-28
